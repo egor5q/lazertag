@@ -80,8 +80,53 @@ def tagjoin(m):
         else:
             bot.send_message(m.chat.id, m.from_user.first_name+', вы уже в игре!')
         
-        
-        
+     
+@bot.message_handler(commands=['tagstart'])
+def tagstart(m):
+    yes=0
+    for ids in games:
+        if ids['id']==m.chat.id:
+            yes=1
+            game=ids
+    if yes==1:
+        if len(game['teams'])>1:
+            if game['started']==0:
+                game['started']=1
+                startgame(game)
+        else:
+            bot.send_message(m.chat.id, 'Недостаточно команд!')
+    else:
+        bot.send_message(m.chat.id, 'Нет запущенной игры! Нажмите /preparegame для сбора игроков.')
+            
+    
+def startgame(game):
+    for ids in game['teams']:
+        team=ids['id']
+        for idss in ids['players']:
+            idss['team']=team
+    for ids in game['teams']:
+        for idss in ids['players']:
+            sendmenu(idss,game,idss['team'])
+    bot.send_message(game['id'],'Начинаем перестрелку! Приготовьте свои лазер-пушки и энергетические щиты и переключайтесь в личку бота!')
+            
+    
+def sendmenu(player,game,team):
+    text='Ваша команда:\n\n'
+    for ids in game['teams']:
+        if ids['id']==team:
+            team=ids
+    for ids in team:
+        text+=ids['name']+':\n'+'♥️:'str(ids['hp'])+'%, 🔵:'+str(ids['shield'])+'%, 🔴:'+str(ids['lazer'])+'%\n\n'
+    kb=types.InlineKeyboardMarkup()
+    kb.add(types.InlineKeyboardButton(text='🔴Стрельба', callback_data='fight shoot'),types.InlineKeyboardButton(text='🔵Защита', callback_data='fight def'))
+    if player['message']==None:
+        msg=bot.send_message(player['id'],text+'Выберите действие.')
+        player['message']=msg
+    else:
+        medit(text+'Выберите действие.',player['message'].chat.id,player['message'].message_id)
+    
+    
+    
 def medit(message_text,chat_id, message_id,reply_markup=None,parse_mode=None):
     return bot.edit_message_text(chat_id=chat_id,message_id=message_id,text=message_text,reply_markup=reply_markup,
                                  parse_mode=parse_mode)  
@@ -144,6 +189,7 @@ def creategame(id,message):
       'id':id,
       'teams':[],
       'turn':1,
+      'started':0,
       'message':message
    }
 
@@ -152,6 +198,7 @@ def createuser(id,name,username):
       'id':id,
       'name':name,
       'username':username,
+      'dead':0,
       'shield':100,
       'maxshield':100,
       'lazer':100,
@@ -161,7 +208,10 @@ def createuser(id,name,username):
       'maxhp':100,
       'restturns':0,
       'effects':[],
-      'team':None
+      'team':None,
+      'action':None,
+      'target':None,
+      'message':None
    }
 
 if True:
