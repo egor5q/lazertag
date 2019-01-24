@@ -55,10 +55,8 @@ def tagjoin(m):
         allplayers=[]
         no=0
         for ids in game['teams']:
-            for idss in ids:
-                print(idss)
-                if idss['id']==m.from_user.id:
-                    no=1
+            if ids['id']==m.from_user.id:
+                no=1
         if no==0:
             try:
                 x=createplayer(m.from_user.id)
@@ -66,6 +64,7 @@ def tagjoin(m):
                 game['teams'].append(createteam(game))
                 game['teams'][len(game['teams'])-1]['players'].append(x)
                 kb=types.InlineKeyboardMarkup()
+                kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
                 medit(editmessage(game['message'],game),game['message'].chat.id,game['message'].message_id,reply_markup=kb)
             except:
                 bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
@@ -110,7 +109,7 @@ def randomgen(teams):
     while x in allids:
         x=''
         i=0
-        while i<6:
+        while i<3:
             i=random.randint(0,9)
             x+=str(i)
             i+=1
