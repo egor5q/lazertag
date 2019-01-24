@@ -161,7 +161,7 @@ def sendmenu(player,game,team):
     for ids in game['teams']:
         if ids['id']==team:
             team=ids
-    for ids in team:
+    for ids in team['players']:
         text+=ids['name']+':\n'+'♥️:'+str(ids['hp'])+'%, 🔵:'+str(ids['shield'])+'%, 🔴:'+str(ids['lazer'])+'%\n\n'
     kb=types.InlineKeyboardMarkup()
     kb.add(types.InlineKeyboardButton(text='🔴Стрельба', callback_data='fight shoot '+str(game['id'])),types.InlineKeyboardButton(text='🔵Защита', callback_data='fight def '+str(game['id'])))
