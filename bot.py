@@ -35,13 +35,18 @@ def start(m):
 def preparegame(m):
     no=0
     for ids in games:
-        if games[ids]['id']==m.chat.id:
+        if ids['id']==m.chat.id:
             no=1
+            game=ids
     if no==0:
         kb=types.InlineKeyboardMarkup()
         kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
         msg=bot.send_message(m.chat.id, 'Начинаем сбор игроков! Жмите /tagjoin для вступления в игру.',reply_markup=kb)
         games.append(creategame(m.chat.id,msg))
+    else:
+        medit('Список игроков ниже.',game['message'].chat.id,game['message'].message_id)
+        msg=bot.send_message(m.chat.id, editmessage(game),reply_markup=kb)
+        game['message']=msg
         
 
 @bot.message_handler(commands=['tagjoin'])
@@ -62,11 +67,12 @@ def tagjoin(m):
             try:
                 x=createplayer(m.from_user.id)
                 bot.send_message(m.from_user.id, 'Вы успешно присоединились!')
+                bot.send_message(m.chat.id, m.from_user.first_name+' присоединился к игре!')
                 game['teams'].append(createteam(game))
                 game['teams'][len(game['teams'])-1]['players'].append(x)
                 kb=types.InlineKeyboardMarkup()
                 kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
-                medit(editmessage(game['message'],game),game['message'].chat.id,game['message'].message_id,reply_markup=kb)
+                medit(editmessage(game),game['message'].chat.id,game['message'].message_id,reply_markup=kb)
             except:
                 bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
         else:
@@ -79,7 +85,7 @@ def medit(message_text,chat_id, message_id,reply_markup=None,parse_mode=None):
                                  parse_mode=parse_mode)  
 
 
-def editmessage(msg,game):
+def editmessage(game):
     text='Начинаем сбор игроков! Жмите /tagjoin для вступления в игру.\n\n'
     for ids in game['teams']:
         t=ids
