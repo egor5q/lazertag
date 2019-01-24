@@ -48,9 +48,9 @@ def preparegame(m):
 def tagjoin(m):
     yes=0
     for ids in games:
-        if games[ids]['id']==m.chat.id:
+        if ids['id']==m.chat.id:
             yes=1
-            game=games[ids]
+            game=ids
     if yes==1:
         game['teams'].append(createteam(game)) 
         x=createplayer(m.from_user.id)
@@ -74,10 +74,10 @@ def medit(message_text,chat_id, message_id,reply_markup=None,parse_mode=None):
 def editmessage(msg,game):
     text=''
     for ids in game['teams']:
-        t=game['teams'][ids]
+        t=ids
         text+='Команда '+t['name']+':\n'
         for idss in t['players']:
-            player=t['players'][idss]
+            player=idss
             if idss!=len(t['players'])-1:
                 symbol='┞'
             else:
