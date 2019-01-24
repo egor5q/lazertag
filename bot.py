@@ -56,6 +56,7 @@ def tagjoin(m):
         no=0
         for ids in game['teams']:
             for idss in ids:
+                print(idss)
                 if idss['id']==m.from_user.id:
                     no=1
         if no==0:
