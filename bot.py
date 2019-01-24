@@ -132,9 +132,9 @@ def inline(call):
                 b=[]
                 b2=[]
                 for ids in s:
-                    b.append(types.InlineKeyboardButton(text='🔴+'str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
+                    b.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
                 for ids in s2:
-                    b2.append(types.InlineKeyboardButton(text='🔴+'str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
+                    b2.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
                 kb.add(b[0],b[1],b[2])
                 kb.add(b2[0],b2[1],b2[2])
                 medit('Выберите силу заряда. Текущая сила: '+str(player['currentcharge'])+'%',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
