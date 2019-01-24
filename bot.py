@@ -45,6 +45,8 @@ def preparegame(m):
         games.append(creategame(m.chat.id,msg))
     else:
         medit('Список игроков ниже.',game['message'].chat.id,game['message'].message_id)
+        kb=types.InlineKeyboardMarkup()
+        kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
         msg=bot.send_message(m.chat.id, editmessage(game),reply_markup=kb)
         game['message']=msg
         
