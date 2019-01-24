@@ -166,10 +166,10 @@ def sendmenu(player,game,team):
     kb=types.InlineKeyboardMarkup()
     kb.add(types.InlineKeyboardButton(text='🔴Стрельба', callback_data='fight shoot '+str(game['id'])),types.InlineKeyboardButton(text='🔵Защита', callback_data='fight def '+str(game['id'])))
     if player['message']==None:
-        msg=bot.send_message(player['id'],text+'Выберите действие.')
+        msg=bot.send_message(player['id'],text+'Выберите действие.',reply_markup=kb)
         player['message']=msg
     else:
-        medit(text+'Выберите действие.',player['message'].chat.id,player['message'].message_id)
+        medit(text+'Выберите действие.',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
     
     
     
