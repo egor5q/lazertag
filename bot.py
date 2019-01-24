@@ -64,7 +64,8 @@ def tagjoin(m):
                 bot.send_message(m.from_user.id, 'Вы успешно присоединились!')
                 game['teams'].append(createteam(game))
                 game['teams'][len(game['teams'])-1]['players'].append(x)
-                medit(editmessage(game['message'],game),game['message'].chat.id,game['message'].message_id)
+                kb=types.InlineKeyboardMarkup()
+                medit(editmessage(game['message'],game),game['message'].chat.id,game['message'].message_id,reply_markup=kb)
             except:
                 bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
         else:
@@ -78,17 +79,19 @@ def medit(message_text,chat_id, message_id,reply_markup=None,parse_mode=None):
 
 
 def editmessage(msg,game):
-    text=''
+    text='Начинаем сбор игроков! Жмите /tagjoin для вступления в игру.\n\n'
     for ids in game['teams']:
         t=ids
         text+='Команда '+t['name']+':\n'
+        i=0
         for idss in t['players']:
             player=idss
-            if idss!=len(t['players'])-1:
+            if i!=len(t['players'])-1:
                 symbol='┞'
             else:
                 symbol='┕'
             text+=symbol+player['name']+'\n'
+            i+=1
         text+='\n'
     return text
         
