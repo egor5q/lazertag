@@ -98,7 +98,53 @@ def tagstart(m):
     else:
         bot.send_message(m.chat.id, 'Нет запущенной игры! Нажмите /preparegame для сбора игроков.')
             
-    
+            
+@bot.callback_query_handler(func=lambda call:True)
+def inline(call): 
+    if 'fight' in call.data:
+        kb=types.InlineKeyboardMarkup()
+        game=None
+        player=None
+        chat=call.data.split(' ')[2]
+        for ids in games:
+            if ids['id']==int(chat):
+                game=ids
+        if game!=None:
+            for ids in game['teams']:
+                for idss in ids['players']:
+                    if idss['id']==call.from_user.id and 'ready' not in idss['effects']:
+                        player=idss
+        if player!=None:
+            if 'shoot' in call.data:
+                for ids in game['teams']:
+                    if ids['id']!=player['team']:
+                        for idss in ids['players']:
+                            kb.add(types.InlineKeyboardButton(text='💢'+idss['name'],callback_data='fight target '+chat+' '+str(idss['id'])))
+                kb.add(types.InlineKeyboardButton(text='Назад',callback_data='fight back1 '+chat))
+                medit('Выберите цель.',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
+            
+            if 'back1' in call.data:
+                sendmenu(player,game,player['team'])
+                
+            if 'target' in call.data:
+                s=[1,2,5]
+                s2=[8,10,15]
+                b=[]
+                b2=[]
+                for ids in s:
+                    b.append(types.InlineKeyboardButton(text='🔴+'str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
+                for ids in s2:
+                    b2.append(types.InlineKeyboardButton(text='🔴+'str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
+                kb.add(b[0],b[1],b[2])
+                kb.add(b2[0],b2[1],b2[2])
+                medit('Выберите силу заряда. Текущая сила: '+str(player['currentcharge'])+'%',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
+                
+                
+                
+                
+        
+
+
 def startgame(game):
     for ids in game['teams']:
         team=ids['id']
@@ -118,7 +164,7 @@ def sendmenu(player,game,team):
     for ids in team:
         text+=ids['name']+':\n'+'♥️:'str(ids['hp'])+'%, 🔵:'+str(ids['shield'])+'%, 🔴:'+str(ids['lazer'])+'%\n\n'
     kb=types.InlineKeyboardMarkup()
-    kb.add(types.InlineKeyboardButton(text='🔴Стрельба', callback_data='fight shoot'),types.InlineKeyboardButton(text='🔵Защита', callback_data='fight def'))
+    kb.add(types.InlineKeyboardButton(text='🔴Стрельба', callback_data='fight shoot '+str(game['id'])),types.InlineKeyboardButton(text='🔵Защита', callback_data='fight def '+str(game['id'])))
     if player['message']==None:
         msg=bot.send_message(player['id'],text+'Выберите действие.')
         player['message']=msg
@@ -193,6 +239,12 @@ def creategame(id,message):
       'message':message
    }
 
+def createdamager(player,damage):
+    return {
+        'id':player['id'],
+        'damage':damage
+    }
+
 def createuser(id,name,username):
    return {
       'id':id,
@@ -204,6 +256,8 @@ def createuser(id,name,username):
       'lazer':100,
       'maxlazer':100,
       'maxcharge':15,
+      'currentlazer':0,
+      'currentdef':0,
       'hp':100,
       'maxhp':100,
       'restturns':0,
@@ -211,7 +265,8 @@ def createuser(id,name,username):
       'team':None,
       'action':None,
       'target':None,
-      'message':None
+      'message':None,
+      'damagers':[]
    }
 
 if True:
