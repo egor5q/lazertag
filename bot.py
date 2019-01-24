@@ -52,17 +52,23 @@ def tagjoin(m):
             yes=1
             game=ids
     if yes==1:
-        game['teams'].append(createteam(game)) 
-        x=createplayer(m.from_user.id)
-        if x!=None:
+        allplayers=[]
+        no=0
+        for ids in game['teams']:
+            for idss in ids:
+                if idss['id']==m.from_user.id:
+                    no=1
+        if no==0:
             try:
+                x=createplayer(m.from_user.id)
                 bot.send_message(m.from_user.id, 'Вы успешно присоединились!')
+                game['teams'].append(createteam(game))
                 game['teams'][len(game['teams'])-1]['players'].append(x)
                 medit(editmessage(game['message'],game),game['message'].chat.id,game['message'].message_id)
             except:
                 bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
         else:
-            bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
+            bot.send_message(m.chat.id, m.from_user.first_name+', вы уже в игре!')
         
         
         
