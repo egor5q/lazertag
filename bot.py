@@ -127,6 +127,7 @@ def inline(call):
                 sendmenu(player,game,player['team'])
                 
             if 'target' in call.data:
+                target=call.data.split(' ')[3]
                 s=[1,2,5]
                 s2=[8,10,15]
                 b=[]
@@ -137,12 +138,14 @@ def inline(call):
                     b2.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
                 kb.add(b[0],b[1],b[2])
                 kb.add(b2[0],b2[1],b2[2])
+                kb.add(types.InlineKeyboardButton(text='Огонь!',callback_data='fight fire '+chat+' '+target))
                 medit('Выберите силу заряда. Текущая сила: '+str(player['currentcharge'])+'%',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
                 
                 
                 
                 
-        
+def endturn(game):
+    pass
 
 
 def startgame(game):
