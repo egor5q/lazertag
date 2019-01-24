@@ -55,8 +55,9 @@ def tagjoin(m):
         allplayers=[]
         no=0
         for ids in game['teams']:
-            if ids['id']==m.from_user.id:
-                no=1
+            for idss in ids:
+                if idss['id']==m.from_user.id:
+                    no=1
         if no==0:
             try:
                 x=createplayer(m.from_user.id)
