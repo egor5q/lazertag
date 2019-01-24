@@ -14,7 +14,7 @@ bot = telebot.TeleBot(token)
 
 
 client=MongoClient(os.environ['database'])
-db=client.
+db=client.lazertag
 users=db.users
 
 games=[]
@@ -64,7 +64,11 @@ def tagjoin(m):
         else:
             bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
         
-   
+        
+        
+def medit(message_text,chat_id, message_id,reply_markup=None,parse_mode=None):
+    return bot.edit_message_text(chat_id=chat_id,message_id=message_id,text=message_text,reply_markup=reply_markup,
+                                 parse_mode=parse_mode)  
 
 
 def editmessage(msg,game):
