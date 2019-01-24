@@ -266,7 +266,8 @@ def createuser(id,name,username):
       'action':None,
       'target':None,
       'message':None,
-      'damagers':[]
+      'damagers':[],
+      'currentcharge':0
    }
 
 if True:
