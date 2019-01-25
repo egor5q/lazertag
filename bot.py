@@ -58,27 +58,31 @@ def tagjoin(m):
         if ids['id']==m.chat.id:
             yes=1
             game=ids
-    if yes==1:
-        allplayers=[]
-        no=0
-        for ids in game['teams']:
-            for idss in ids['players']:
-                if idss['id']==m.from_user.id:
-                    no=1
-        if no==0:
-            try:
-                x=createplayer(m.from_user.id)
-                bot.send_message(m.from_user.id, 'Вы успешно присоединились!')
-                bot.send_message(m.chat.id, m.from_user.first_name+' присоединился к игре!')
-                game['teams'].append(createteam(game))
-                game['teams'][len(game['teams'])-1]['players'].append(x)
-                kb=types.InlineKeyboardMarkup()
-                kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
-                medit(editmessage(game),game['message'].chat.id,game['message'].message_id,reply_markup=kb)
-            except:
-                bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
+    if game!=None:
+        if game['started']==0:
+            if yes==1:
+                allplayers=[]
+                no=0
+                for ids in game['teams']:
+                    for idss in ids['players']:
+                        if idss['id']==m.from_user.id:
+                            no=1
+                if no==0:
+                    try:
+                        x=createplayer(m.from_user.id)
+                        bot.send_message(m.from_user.id, 'Вы успешно присоединились!')
+                        bot.send_message(m.chat.id, m.from_user.first_name+' присоединился к игре!')
+                        game['teams'].append(createteam(game))
+                        game['teams'][len(game['teams'])-1]['players'].append(x)
+                        kb=types.InlineKeyboardMarkup()
+                        kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
+                        medit(editmessage(game),game['message'].chat.id,game['message'].message_id,reply_markup=kb)
+                    except:
+                        bot.send_message(m.chat.id, 'Сначала напишите /start боту @Lazertagbot в личку!')
+                else:
+                    bot.send_message(m.chat.id, m.from_user.first_name+', вы уже в игре!')
         else:
-            bot.send_message(m.chat.id, m.from_user.first_name+', вы уже в игре!')
+            bot.send_message(m.chat.id, 'Игра уже началась!')
         
      
 @bot.message_handler(commands=['tagstart'])
