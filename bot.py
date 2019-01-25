@@ -362,7 +362,7 @@ def endturn(game):
             if ids['id']==aliveteams[0]:
                 tm=ids
         txt=''
-        for ids in tm:
+        for ids in tm['players']:
             if ids['dead']==0:
                 txt+=ids['name']+'\n'
         bot.send_message(game['id'],'Команда '+aliveteams[0]+' победила! Выжившие участники команды:\n'+txt)
