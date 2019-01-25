@@ -146,6 +146,8 @@ def inline(call):
                     d2.append(types.InlineKeyboardButton(text='🔴'+str(ids)+'%',callback_data='fight target1 '+chat+' '+str(ids)+' '+str(ids)))
                 kb.add(b[0],b[1],b[2])
                 kb.add(b2[0],b2[1],b2[2])
+                kb.add(d[0],d[1],d[2])
+                kb.add(d2[0],d2[1],d2[2])
                 kb.add(types.InlineKeyboardButton(text='Огонь!',callback_data='fight fire '+chat+' '+target))
                 kb.add(types.InlineKeyboardButton(text='Отмена.',callback_data='fight back1 '+chat))
                 if 'target1' in call.data:
