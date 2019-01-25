@@ -262,7 +262,7 @@ def endturn(game):
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['message']!=None:
-                medit('Время вышло!',idss['message'].chat.id,player['message'].message_id)
+                medit('Время вышло!',idss['message'].chat.id,idss['message'].message_id)
                 idss['message']=None
             if idss['ready']==1:
                 action(idss)
