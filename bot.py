@@ -171,6 +171,7 @@ def inline(call):
                 player['action']='def'
                 medit(txt+' Ждите окончания хода.',player['message'].chat.id,player['message'].message_id)
                 player['message']=None
+                check(game)
                 
                 
             if 'target' in call.data:
@@ -224,11 +225,20 @@ def inline(call):
                     player['action']='attack'
                     medit('Вы направляете свой лазер на '+enemy['name']+'... Ждите окончания хода.',player['message'].chat.id,player['message'].message_id)
                     player['message']=None
+                    check(game)
                 else:
                     bot.answer_callback_query(call.id, 'В этой игре нет такого игрока!')
                     
                 
-                
+def check(game):
+    no=0
+    for ids in game['teams']:
+        for idss in ids['players']:
+            if idss['dead']==0 and idss['ready']==0:
+                no=1
+    if no==0:
+        endturn(game)
+
                 
 def endturn(game):
     for ids in game['teams']:
@@ -240,7 +250,88 @@ def endturn(game):
                 action(idss)
     for ids in game['teams']:
         for idss in ids['players']:
-            if idss
+            if idss['action']=='attack':
+                if idss['takendmg']<=0:
+                    game['res']+='🔴|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+'!\n'
+                else:
+                    idss['hp']-=idss['takendmg']
+                    game['res']+='🔴💔|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+', '+
+                    'но тоже попадает под огонь! Потеряно '+str(idss['takendmg'])+' хп.\n'
+                
+    for ids in game['teams']:
+        for idss in ids['players']:
+            if idss['action']=='def':
+                if idss['currentdef']<0:
+                    if idss['takendmg']>0:
+                        idss['takendmg']-=idss['currentdef']
+                        idss['hp']-=idss['takendmg']
+                        game['res']+='🔋💔|'idss['name']+' зарядил '+str(idss['currentdef'])+'% щита и потерял '+str(idss['takendmg'])+'% хп!\n'
+                    else:
+                        game['res']+='🔋|'idss['name']+' зарядил '+str(idss['currentdef'])+'% щита!\n'
+                else:
+                    if idss['currentshield']>=idss['takendmg']:
+                        l=int(idss['takendmg']/2)
+                        idss['lazer']+=l
+                        idss['shield']-=idss['currentshield']
+                        game['res']+='🔵|'+idss['name']+' блокирует весь входящий урон ('+str(idss['takendmg'])+')! Потеряно '+str(idss['currentshield'])+'% заряда щита; '+
+                        'восстановлено '+str(l)+'% энергии лазера!\n'
+                    else:
+                        l=int(idss['takendmg']/3)
+                        idss['lazer']+=l
+                        idss['shield']-=idss['currentshield']
+                        idss['takendmg']-=idss['currentshield']
+                        idss['hp']-=idss['takendmg']
+                        game['res']+='🔵💔|'+idss['name']+' тратит '+str(idss['currentshield'])+'% щита, но блокирует не весь входящий урон! Потеряно '+str(idss['takendmg'])+'% хп; '+
+                        'восстановлено '+str(l)+'% энергии лазера!\n'
+    for ids in game['teams']:
+        for idss in ids['players']:
+            if idss['action']==None:
+                if idss['takendmg']>0:
+                    game['res']+='😴💔|'+idss['name']+' пропускает ход и подставляется под лазер! Потеряно '+str(idss['takendmg'])+'% хп.\n'
+                else:
+                    game['res']+='😴|'+idss['name']+' пропускает ход, и не теряет ни одного хп!\n'
+                    
+    for ids in game['teams']:
+        for idss in ids['players']:
+            idss['ready']=0
+            idss['currentdef']=0
+            idss['currentcharge']=0
+            idss['action']=None
+            idss['target']=None
+    for ids in game['teams']:
+        for idss in ids['players']:
+            if idss['hp']<=0 or (idss['lazer']<=0 and idss['shield']<=0):
+                idss['dead']=1
+                game['res2']+='☠️|'+idss['name']+' погибает.\n'
+    aliveteams=[]
+    for ids in game['teams']:
+        for idss in ids['players']:
+            if idss['dead']==0 and idss['team'] not in aliveteams:
+                aliveteams.append(idss['team'])
+    bot.send_message(game['id'],game['res'])
+    bot.send_message(game['id'],game['res2'])
+    if len(aliveteams)>1:
+        for ids in game['teams']:
+            for idss in ids['players']:
+                if idss['dead']!=1:
+                    sendmenu(idss,game,idss['team'])
+        game['turn']+=1
+        game['res']='Результаты хода '+str(game['turn'])+':\n'
+    elif len(aliveteams)==1:
+        tm=None
+        for ids in game['teams']:
+            if ids['id']==aliveteams[0]:
+                tm=ids
+        txt=''
+        for ids in tm:
+            if ids['dead']==0:
+                txt+=ids['name']+'\n'
+        bot.send_message(game['id'],'Команда '+aliveteams[0]+' победила! Выжившие участники команды:\n'+txt)
+        games.remove(game)
+    else:
+        bot.send_message(game['id'],'Все команды проиграли!')
+        games.remove(game)
+                
 
 
 def action(player):
@@ -249,7 +340,8 @@ def action(player):
         target['takendmg']+=player['currentcharge']
         player['lazer']-=player['currentcharge']
     elif player['action']=='def':
-        pass
+        if player['currentdef']<0:
+            player['shield']-=player['currentdef']
     
                 
 def startgame(game):
@@ -343,7 +435,9 @@ def creategame(id,message):
       'teams':[],
       'turn':1,
       'started':0,
-      'message':message
+      'message':message,
+      'res':'Результаты хода 1:\n',
+      'res2':'Итоги хода:\n'
    }
 
 def createdamager(player,damage):
