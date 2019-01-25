@@ -278,7 +278,7 @@ def endturn(game):
                 
     for ids in game['teams']:
         for idss in ids['players']:
-            if idss['action']=='def':
+            if idss['action']=='def' and 'dead' not in idss['effects']:
                 if idss['currentdef']<0:
                     if idss['takendmg']>0:
                         idss['takendmg']-=idss['currentdef']
@@ -303,7 +303,7 @@ def endturn(game):
                         'восстановлено '+str(l)+'% энергии лазера!\n'
     for ids in game['teams']:
         for idss in ids['players']:
-            if idss['action']=='reload':
+            if idss['action']=='reload' and 'dead' not in idss['effects']:
                 if idss['takendmg']>0:
                     idss['hp']-=idss['takendmg']
                     game['res']+='🔋💔|'+idss['name']+' заряжает лазер на 25%, но попадает под огонь! Потеряно '+str(idss['takendmg'])+'% хп.\n'
@@ -312,7 +312,7 @@ def endturn(game):
                     
     for ids in game['teams']:
         for idss in ids['players']:
-            if idss['action']==None:
+            if idss['action']==None and 'dead' not in idss['effects']:
                 if idss['takendmg']>0:
                     idss['hp']-=idss['takendmg']
                     game['res']+='😴💔|'+idss['name']+' пропускает ход и подставляется под лазер! Потеряно '+str(idss['takendmg'])+'% хп.\n'
@@ -336,8 +336,10 @@ def endturn(game):
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['hp']<=0 or (idss['lazer']<=0 and idss['shield']<=0):
+              if 'dead' not in idss['effects']:
                 idss['dead']=1
                 game['res2']+='☠️|'+idss['name']+' погибает.\n'
+                idss['effects'].append('dead')
     aliveteams=[]
     for ids in game['teams']:
         for idss in ids['players']:
