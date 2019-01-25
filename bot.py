@@ -92,6 +92,9 @@ def tagstart(m):
         if len(game['teams'])>1:
             if game['started']==0:
                 game['started']=1
+                t=threading.Timer(40,endturn,args=[game])
+                t.start()
+                game['timer']=t
                 startgame(game)
         else:
             bot.send_message(m.chat.id, 'Недостаточно команд!')
@@ -228,6 +231,13 @@ def inline(call):
                     check(game)
                 else:
                     bot.answer_callback_query(call.id, 'В этой игре нет такого игрока!')
+             
+            if 'reloadgun' in call.data:
+                player['ready']=1
+                player['action']='reload'
+                medit('Вы заряжаете лазер! Ждите окончания хода.',player['message'].chat.id,player['message'].message_id)
+                player['message']=None
+                check(game)
                     
                 
 def check(game):
@@ -285,6 +295,15 @@ def endturn(game):
                         'восстановлено '+str(l)+'% энергии лазера!\n'
     for ids in game['teams']:
         for idss in ids['players']:
+            if idss['action']=='reload':
+                if idss['takendmg']>0:
+                    idss['hp']-=idss['takendmg']
+                    game['res']+='🔋💔|'+idss['name']+' заряжает лазер на 25%, но попадает под огонь! Потеряно '+str(idss['takendmg'])+'% хп.\n'
+                else:
+                    game['res']+='🔋|'+idss['name']+' заряжает лазер на 25%!\n'
+                    
+    for ids in game['teams']:
+        for idss in ids['players']:
             if idss['action']==None:
                 if idss['takendmg']>0:
                     idss['hp']-=idss['takendmg']
@@ -300,6 +319,12 @@ def endturn(game):
             idss['action']=None
             idss['target']=None
             idss['takendmg']=0
+            if idss['lazer']>idss['maxlazer']:
+                idss['lazer']=idss['maxlazer']
+                game['res2']+='⚡️🔴|'+idss['name']+' теряет лишний заряд лазера.\n'
+            if idss['shield']>idss['maxshield']:
+                idss['shield']=idss['maxshield']
+                game['res2']+='⚡️🔵|'+idss['name']+' теряет лишний заряд щита.\n'
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['hp']<=0 or (idss['lazer']<=0 and idss['shield']<=0):
@@ -345,6 +370,8 @@ def action(player):
     elif player['action']=='def':
         if player['currentdef']<0:
             player['shield']-=player['currentdef']
+    elif player['action']=='reload':
+        player['lazer']+=25
     
                 
 def startgame(game):
@@ -367,6 +394,7 @@ def sendmenu(player,game,team):
         text+=ids['name']+':\n'+'♥️:'+str(ids['hp'])+'%, 🔵:'+str(ids['shield'])+'%, 🔴:'+str(ids['lazer'])+'%\n\n'
     kb=types.InlineKeyboardMarkup()
     kb.add(types.InlineKeyboardButton(text='🔴Стрельба', callback_data='fight shoot '+str(game['id'])),types.InlineKeyboardButton(text='🔵Защита', callback_data='fight def '+str(game['id'])))
+    kb.add(types.InlineKeyboardButton(text='🔋Зарядить лазер',callback_data='fight reloadgun '+str(game['id'])))
     if player['message']==None:
         msg=bot.send_message(player['id'],text+'Выберите действие.',reply_markup=kb)
         player['message']=msg
@@ -440,7 +468,8 @@ def creategame(id,message):
       'started':0,
       'message':message,
       'res':'Результаты хода 1:\n',
-      'res2':'Итоги хода:\n'
+      'res2':'Итоги хода:\n',
+      'timer':None
    }
 
 def createdamager(player,damage):
