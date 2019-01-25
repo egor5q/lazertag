@@ -265,9 +265,9 @@ def endturn(game):
                     if idss['takendmg']>0:
                         idss['takendmg']-=idss['currentdef']
                         idss['hp']-=idss['takendmg']
-                        game['res']+='🔋💔|'idss['name']+' зарядил '+str(idss['currentdef'])+'% щита и потерял '+str(idss['takendmg'])+'% хп!\n'
+                        game['res']+='🔋💔|'+idss['name']+' зарядил '+str(idss['currentdef'])+'% щита и потерял '+str(idss['takendmg'])+'% хп!\n'
                     else:
-                        game['res']+='🔋|'idss['name']+' зарядил '+str(idss['currentdef'])+'% щита!\n'
+                        game['res']+='🔋|'+idss['name']+' зарядил '+str(idss['currentdef'])+'% щита!\n'
                 else:
                     if idss['currentshield']>=idss['takendmg']:
                         l=int(idss['takendmg']/2)
