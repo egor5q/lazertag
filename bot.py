@@ -161,6 +161,9 @@ def inline(call):
                     if player['currentdef']>player['shield']:
                         player['currentdef']=player['shield']
                         bot.answer_callback_query(call.id, 'У вас не хватает мощности щита!')
+                    if player['currentdef']<-40:
+                        player['currentdef']=-40
+                        bot.answer_callback_query(call.id, 'Нельзя зарядить более 40% щита за ход!')
                 if player['currentdef']<0:
                     txt='⚡️Зарядить щит'
                 else:
@@ -347,6 +350,11 @@ def endturn(game):
                 aliveteams.append(idss['team'])
     bot.send_message(game['id'],game['res'])
     bot.send_message(game['id'],game['res2'])
+    for ids in game['teams']:
+        for idss in ids['players']:
+            if idss['dead']!=1:
+                bot.send_message(idss['id'],game['res'])
+                bot.send_message(idss['id'],game['res2'])
     if len(aliveteams)>1:
         for ids in game['teams']:
             for idss in ids['players']:
