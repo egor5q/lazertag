@@ -130,17 +130,33 @@ def inline(call):
                 target=call.data.split(' ')[3]
                 s=[1,2,5]
                 s2=[8,10,15]
+                m=[-1,-2,-5]
+                m2=[-8,-10,-15]
+                d=[]
+                d2=[]
                 b=[]
                 b2=[]
                 for ids in s:
-                    b.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
+                    b.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight target1 '+chat+' '+str(ids)+' '+str(ids)))
                 for ids in s2:
-                    b2.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight charge '+chat+' '+str(ids)))
+                    b2.append(types.InlineKeyboardButton(text='🔴+'+str(ids)+'%',callback_data='fight target1 '+chat+' '+str(ids)+' '+str(ids)))
+                for ids in m:
+                    d.append(types.InlineKeyboardButton(text='🔴'+str(ids)+'%',callback_data='fight target1 '+chat+' '+str(ids)+' '+str(ids)))
+                for ids in m2:
+                    d2.append(types.InlineKeyboardButton(text='🔴'+str(ids)+'%',callback_data='fight target1 '+chat+' '+str(ids)+' '+str(ids)))
                 kb.add(b[0],b[1],b[2])
                 kb.add(b2[0],b2[1],b2[2])
                 kb.add(types.InlineKeyboardButton(text='Огонь!',callback_data='fight fire '+chat+' '+target))
+                kb.add(types.InlineKeyboardButton(text='Отмена.',callback_data='fight back1 '+chat))
+                if 'target1' in call.data:
+                    x=int(call.data.split(' ')[4])
+                    player['currentcharge']+=x
                 medit('Выберите силу заряда. Текущая сила: '+str(player['currentcharge'])+'%',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
                 
+            if 'charge' in call.data:
+                target=call.data.split(' ')[3]
+                
+                kb.add(types.InlineKeyboardButton(text='Огонь!',callback_data='fight fire '+chat+' '+target))
                 
                 
                 
