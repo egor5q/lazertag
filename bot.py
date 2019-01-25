@@ -160,11 +160,11 @@ def inline(call):
                     txt='🔵Защита!'
                 kb.add(types.InlineKeyboardButton(text=txt,callback_data='fight shield '+chat))
                 kb.add(types.InlineKeyboardButton(text='Отмена.',callback_data='fight back1 '+chat))
-                medit('Выберите мощность щита. Текущая мощность: '+str(player['currentshield'])+'%',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
+                medit('Выберите мощность щита. Текущая мощность: '+str(player['currentdef'])+'%',player['message'].chat.id,player['message'].message_id,reply_markup=kb)
                 
             if 'shield' in call.data:
                 player['ready']=1
-                if player['currentshield']<0:
+                if player['currentdef']<0:
                     txt='Вы заряжаете свой щит.'
                 else:
                     txt='Вы приготовились защищаться от лазеров.'
