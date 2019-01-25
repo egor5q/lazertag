@@ -255,7 +255,7 @@ def endturn(game):
                     game['res']+='🔴|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+'!\n'
                 else:
                     idss['hp']-=idss['takendmg']
-                    game['res']+='🔴💔|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+', '+
+                    game['res']+='🔴💔|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+', '+\
                     'но тоже попадает под огонь! Потеряно '+str(idss['takendmg'])+' хп.\n'
                 
     for ids in game['teams']:
@@ -273,7 +273,7 @@ def endturn(game):
                         l=int(idss['takendmg']/2)
                         idss['lazer']+=l
                         idss['shield']-=idss['currentshield']
-                        game['res']+='🔵|'+idss['name']+' блокирует весь входящий урон ('+str(idss['takendmg'])+')! Потеряно '+str(idss['currentshield'])+'% заряда щита; '+
+                        game['res']+='🔵|'+idss['name']+' блокирует весь входящий урон ('+str(idss['takendmg'])+')! Потеряно '+str(idss['currentshield'])+'% заряда щита; '+\
                         'восстановлено '+str(l)+'% энергии лазера!\n'
                     else:
                         l=int(idss['takendmg']/3)
@@ -281,7 +281,7 @@ def endturn(game):
                         idss['shield']-=idss['currentshield']
                         idss['takendmg']-=idss['currentshield']
                         idss['hp']-=idss['takendmg']
-                        game['res']+='🔵💔|'+idss['name']+' тратит '+str(idss['currentshield'])+'% щита, но блокирует не весь входящий урон! Потеряно '+str(idss['takendmg'])+'% хп; '+
+                        game['res']+='🔵💔|'+idss['name']+' тратит '+str(idss['currentshield'])+'% щита, но блокирует не весь входящий урон! Потеряно '+str(idss['takendmg'])+'% хп; '+\
                         'восстановлено '+str(l)+'% энергии лазера!\n'
     for ids in game['teams']:
         for idss in ids['players']:
