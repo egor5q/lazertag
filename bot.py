@@ -269,24 +269,25 @@ def endturn(game):
                     else:
                         game['res']+='🔋|'+idss['name']+' зарядил '+str(idss['currentdef'])+'% щита!\n'
                 else:
-                    if idss['currentshield']>=idss['takendmg']:
+                    if idss['currentdef']>=idss['takendmg']:
                         l=int(idss['takendmg']/2)
                         idss['lazer']+=l
-                        idss['shield']-=idss['currentshield']
-                        game['res']+='🔵|'+idss['name']+' блокирует весь входящий урон ('+str(idss['takendmg'])+')! Потеряно '+str(idss['currentshield'])+'% заряда щита; '+\
+                        idss['shield']-=idss['currentdef']
+                        game['res']+='🔵|'+idss['name']+' блокирует весь входящий урон ('+str(idss['takendmg'])+')! Потеряно '+str(idss['currentdef'])+'% заряда щита; '+\
                         'восстановлено '+str(l)+'% энергии лазера!\n'
                     else:
                         l=int(idss['takendmg']/3)
                         idss['lazer']+=l
-                        idss['shield']-=idss['currentshield']
-                        idss['takendmg']-=idss['currentshield']
+                        idss['shield']-=idss['currentdef']
+                        idss['takendmg']-=idss['currentdef']
                         idss['hp']-=idss['takendmg']
-                        game['res']+='🔵💔|'+idss['name']+' тратит '+str(idss['currentshield'])+'% щита, но блокирует не весь входящий урон! Потеряно '+str(idss['takendmg'])+'% хп; '+\
+                        game['res']+='🔵💔|'+idss['name']+' тратит '+str(idss['currentdef'])+'% щита, но блокирует не весь входящий урон! Потеряно '+str(idss['takendmg'])+'% хп; '+\
                         'восстановлено '+str(l)+'% энергии лазера!\n'
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['action']==None:
                 if idss['takendmg']>0:
+                    idss['hp']-=idss['takendmg']
                     game['res']+='😴💔|'+idss['name']+' пропускает ход и подставляется под лазер! Потеряно '+str(idss['takendmg'])+'% хп.\n'
                 else:
                     game['res']+='😴|'+idss['name']+' пропускает ход, и не теряет ни одного хп!\n'
@@ -298,6 +299,7 @@ def endturn(game):
             idss['currentcharge']=0
             idss['action']=None
             idss['target']=None
+            idss['takendmg']=0
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['hp']<=0 or (idss['lazer']<=0 and idss['shield']<=0):
@@ -317,6 +319,7 @@ def endturn(game):
                     sendmenu(idss,game,idss['team'])
         game['turn']+=1
         game['res']='Результаты хода '+str(game['turn'])+':\n'
+        game['res2']='Итоги хода:\n'
     elif len(aliveteams)==1:
         tm=None
         for ids in game['teams']:
