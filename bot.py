@@ -251,6 +251,10 @@ def check(game):
 
                 
 def endturn(game):
+    try:
+        game['timer'].cancel()
+    except:
+        pass
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['message']!=None:
@@ -345,6 +349,9 @@ def endturn(game):
         game['turn']+=1
         game['res']='Результаты хода '+str(game['turn'])+':\n'
         game['res2']='Итоги хода:\n'
+        t=threading.Timer(40,endturn,args=[game])
+        t.start()
+        game['timer']=t
     elif len(aliveteams)==1:
         tm=None
         for ids in game['teams']:
