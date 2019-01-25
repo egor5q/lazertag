@@ -252,10 +252,10 @@ def endturn(game):
         for idss in ids['players']:
             if idss['action']=='attack':
                 if idss['takendmg']<=0:
-                    game['res']+='🔴|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+'!\n'
+                    game['res']+='🔴|'+idss['name']+' заряжает лазер на '+str(idss['currentcharge'])+'% и стреляет в '+idss['target']['name']+'!\n'
                 else:
                     idss['hp']-=idss['takendmg']
-                    game['res']+='🔴💔|'+idss['name']+' заряжает лазер на '+idss['currentcharge']+'% и стреляет в '+idss['target']['name']+', '+\
+                    game['res']+='🔴💔|'+idss['name']+' заряжает лазер на '+str(idss['currentcharge'])+'% и стреляет в '+idss['target']['name']+', '+\
                     'но тоже попадает под огонь! Потеряно '+str(idss['takendmg'])+' хп.\n'
                 
     for ids in game['teams']:
