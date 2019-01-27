@@ -43,8 +43,14 @@ def preparegame(m):
         kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
         msg=bot.send_message(m.chat.id, 'Начинаем сбор игроков! Жмите /tagjoin для вступления в игру.',reply_markup=kb)
         games.append(creategame(m.chat.id,msg))
+        t=threading.Timer(300,cancelgame,args=[game])
+        t.start()
+        game['canceltimer']=t
     else:
-        medit('Список игроков ниже.',game['message'].chat.id,game['message'].message_id)
+        try:
+            medit('Список игроков ниже.',game['message'].chat.id,game['message'].message_id)
+        except:
+            pass
         kb=types.InlineKeyboardMarkup()
         kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
         msg=bot.send_message(m.chat.id, editmessage(game),reply_markup=kb)
@@ -95,6 +101,7 @@ def tagstart(m):
     if yes==1:
         if len(game['teams'])>1:
             if game['started']==0:
+                game['canceltimer'].cancel()
                 game['started']=1
                 t=threading.Timer(60,endturn,args=[game])
                 t.start()
@@ -265,8 +272,17 @@ def endturn(game):
     for ids in game['teams']:
         for idss in ids['players']:
             if idss['message']!=None:
+                if 'afk' in idss['effects']:
+                    idss['dead']=1
+                    game['res']+=idss['name']+' умер от АФК!\n'
+                idss['effects'].append('afk')
                 medit('Время вышло!',idss['message'].chat.id,idss['message'].message_id)
                 idss['message']=None
+            else:
+                try:
+                    idss['effects'].remove('afk')
+                except:
+                    pass
             if idss['ready']==1:
                 action(idss)
     for ids in game['teams']:
@@ -431,6 +447,8 @@ def medit(message_text,chat_id, message_id,reply_markup=None,parse_mode=None):
 
 def editmessage(game):
     text='Начинаем сбор игроков! Жмите /tagjoin для вступления в игру.\n\n'
+    if game['started']==1:
+        text='Игра уже идёт!\n\n'
     for ids in game['teams']:
         t=ids
         text+='Команда '+t['name']+':\n'
@@ -466,7 +484,13 @@ def randomgen(teams):
             i+=1
     return x
     
-  
+def cancelgame(game):
+    try:
+        games.remove(game)
+        bot.send_message(game['id'],'Игра была отменена!')
+    except:
+        pass
+    
 
 def createplayer(id):
     x=users.find_one({'id':id})
@@ -490,7 +514,8 @@ def creategame(id,message):
       'message':message,
       'res':'Результаты хода 1:\n',
       'res2':'Итоги хода:\n',
-      'timer':None
+      'timer':None,
+      'canceltimer':None
    }
 
 def createdamager(player,damage):
