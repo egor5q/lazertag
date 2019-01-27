@@ -96,7 +96,7 @@ def tagstart(m):
         if len(game['teams'])>1:
             if game['started']==0:
                 game['started']=1
-                t=threading.Timer(40,endturn,args=[game])
+                t=threading.Timer(60,endturn,args=[game])
                 t.start()
                 game['timer']=t
                 startgame(game)
@@ -136,9 +136,9 @@ def inline(call):
                 
             if 'def' in call.data:
                 s=[1,2,5]
-                s2=[10,25,50]
+                s2=[10,20,50]
                 m=[-1,-2,-5]
-                m2=[-10,-25,-50]
+                m2=[-10,-20,-50]
                 d=[]
                 d2=[]
                 b=[]
@@ -187,9 +187,9 @@ def inline(call):
             if 'target' in call.data:
                 target=call.data.split(' ')[3]
                 s=[1,2,5]
-                s2=[8,10,15]
+                s2=[8,10,20]
                 m=[-1,-2,-5]
-                m2=[-8,-10,-15]
+                m2=[-8,-10,-20]
                 d=[]
                 d2=[]
                 b=[]
@@ -363,7 +363,7 @@ def endturn(game):
         game['turn']+=1
         game['res']='Результаты хода '+str(game['turn'])+':\n'
         game['res2']='Итоги хода:\n'
-        t=threading.Timer(40,endturn,args=[game])
+        t=threading.Timer(60,endturn,args=[game])
         t.start()
         game['timer']=t
     elif len(aliveteams)==1:
