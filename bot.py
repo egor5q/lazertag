@@ -30,7 +30,8 @@ def start(m):
       users.insert_one(createuser(m.from_user.id,m.from_user.first_name,m.from_user.username))
       bot.send_message(m.chat.id, m.from_user.first_name+', приветствую в игре "Лазертаг"! Цель этой игры - остаться единственной '+
                        'живой командой в игре! Подробности по команде /help.')
-        
+     
+
 @bot.message_handler(commands=['preparegame'])
 def preparegame(m):
     no=0
@@ -265,6 +266,7 @@ def check(game):
 
                 
 def endturn(game):
+  try:
     try:
         game['timer'].cancel()
     except:
@@ -396,7 +398,12 @@ def endturn(game):
     else:
         bot.send_message(game['id'],'Все команды проиграли!')
         games.remove(game)
-                
+        
+  except Exception as e:
+    print('Ошибка:\n', traceback.format_exc())
+    bot.send_message(441399484, traceback.format_exc())
+    games.remove(game)
+    bot.send_message(game['id'],'Произошла ошибка! Игра была удалена.')
 
 
 def action(player):
