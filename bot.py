@@ -45,6 +45,10 @@ def preparegame(m):
         kb.add(types.InlineKeyboardButton(text='Сменить команду', callback_data='teamchoice'))
         msg=bot.send_message(m.chat.id, 'Начинаем сбор игроков! Жмите /tagjoin для вступления в игру.',reply_markup=kb)
         games.append(creategame(m.chat.id,msg))
+        for ids in games:
+            if ids['id']==m.chat.id:
+                yes=1
+                game=ids
         t=threading.Timer(300,cancelgame,args=[game])
         t.start()
         game['canceltimer']=t
@@ -61,6 +65,7 @@ def preparegame(m):
 
 @bot.message_handler(commands=['tagjoin'])
 def tagjoin(m):
+    game=None
     yes=0
     for ids in games:
         if ids['id']==m.chat.id:
