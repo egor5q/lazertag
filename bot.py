@@ -156,10 +156,10 @@ def inline(call):
                 sendmenu(player,game,player['team'])
                 
             if 'def' in call.data:
-                s=[1,2,5]
-                s2=[10,20,50]
-                m=[-1,-2,-5]
-                m2=[-10,-20,-50]
+                s=[1,5,10]
+                s2=[20,30,40]
+                m=[-1,-5,-10]
+                m2=[-20,-30,-40]
                 d=[]
                 d2=[]
                 b=[]
@@ -207,10 +207,10 @@ def inline(call):
                 
             if 'target' in call.data:
                 target=call.data.split(' ')[3]
-                s=[1,2,5]
-                s2=[8,10,20]
-                m=[-1,-2,-5]
-                m2=[-8,-10,-20]
+                s=[1,5,10]
+                s2=[20,30,40]
+                m=[-1,-5,-10]
+                m2=[-20,-30,-40]
                 d=[]
                 d2=[]
                 b=[]
@@ -232,9 +232,9 @@ def inline(call):
                 if 'target1' in call.data:
                     x=int(call.data.split(' ')[4])
                     player['currentcharge']+=x
-                    if player['currentcharge']>player['maxcharge']:
-                        player['currentcharge']=player['maxcharge']
-                        bot.answer_callback_query(call.id, 'Нельзя выставить мощности больше, чем '+str(player['maxcharge'])+'%!')
+                    if player['currentcharge']>40:
+                        player['currentcharge']=40
+                        bot.answer_callback_query(call.id, 'Нельзя выставить мощности больше, чем 40%!')
                     if player['currentcharge']<0:
                         player['currentcharge']=0
                         bot.answer_callback_query(call.id, 'Нельзя выставить мощности меньше, чем 0%!')
